@@ -12,10 +12,10 @@
 #############################
 
 -- 1.1: Retrieve all data from the dept_manager_dup table
-
+SELECT* FROM dept_manager_dup ORDER BY dept_no;
 
 -- 1.2: Retrieve all data from the departments_dup table
-
+SELECT* FROM departments_dup ORDER BY dept_no
 
 #############################
 -- Task Two: INNER JOIN
@@ -28,11 +28,19 @@
 
 -- 2.1: Extract all managers' employees number, department number, 
 -- and department name. Order by the manager's department number
-
+SELECT m.emp_no, m.dept_no, d.dept_name
+FROM dept_manager_dup AS m
+INNER JOIN departments_dup AS d
+ON m.dept_no = d.dept_no
+ORDER BY m.dept_no;
 
 
 -- add m.from_date and m.to_date
-
+SELECT m.emp_no, m.dept_no, d.dept_name, m.from_date, m.to_date
+FROM dept_manager_dup AS m
+INNER JOIN departments_dup AS d
+ON m.dept_no = d.dept_no
+ORDER BY m.dept_no;
 
 -- 2.2 (Ex.): Extract a list containing information about all managers'
 -- employee number, first and last name, dept_number and hire_date
@@ -44,6 +52,10 @@ SELECT * FROM employees;
 SELECT * FROM dept_manager;
 
 -- Solution to 2.2
+SELECT e.emp_no, e.first_name, e.last_name, e.hire_date, dm.dept_no
+FROM employees AS e
+INNER JOIN dept_manager AS dm
+ON e.emp_no = dm.emp_no;
 
 
 #############################
@@ -77,13 +89,21 @@ FROM departments_dup
 ORDER BY dept_no ASC;
 
 -- 3.4: Perform INNER JOIN as before
+SELECT m.emp_no, m.dept_no, d.dept_name
+FROM dept_manager_dup AS m
+INNER JOIN departments_dup AS d
+ON m.dept_no = d.dept_no
+ORDER BY m.dept_no;
 
 
 -- 3.5: add a GROUP BY clause. Make sure to include all the fields in the GROUP BY clause
+SELECT m.emp_no, m.dept_no, d.dept_name
+FROM dept_manager_dup AS m
+INNER JOIN departments_dup AS d
+ON m.dept_no = d.dept_no
+GROUP BY m.emp_no, m.dept_no, d.dept_name
+ORDER BY m.dept_no;
 
-
-
-#############################
 -- Task Four: LEFT JOIN
 -- In this task, you will retrieve data from the two tables using LEFT JOIN
 #############################
@@ -125,13 +145,25 @@ ORDER BY m.dept_no;
 -- 4.5: Join the dept_manager_dup and departments_dup tables
 -- Extract a subset of all managers' employee number, department number, 
 -- and department name. Order by the managers' department number
-
+SELECT m.dept_no, m.emp_no, d.dept_name
+FROM dept_manager_dup AS m
+LEFT JOIN departments_dup AS d
+ON m.dept_no = d.dept_no
+ORDER BY m.dept_no;
 
 -- 4.6: What will happen when we d LEFT JOIN m?
-
+SELECT m.dept_no, m.emp_no, d.dept_name
+FROM departments_dup AS d
+LEFT JOIN dept_manager_dup AS m
+ON d.dept_no = m.dept_no
+ORDER BY m.dept_no;
 
 -- 4.7: Let's select d.dept_no
-
+SELECT m.dept_no, m.emp_no, d.dept_name
+FROM departments_dup AS d
+LEFT JOIN dept_manager_dup AS m
+ON d.dept_no = m.dept_no
+ORDER BY d.dept_no;
 
 -- LEFT OUTER JOIN
 
@@ -153,14 +185,26 @@ ON m.dept_no = d.dept_no
 ORDER BY dept_no;
 
 -- 5.1: Let's use RIGHT JOIN
+SELECT m.dept_no, m.emp_no, d.dept_name
+FROM dept_manager_dup AS m
+RIGHT OUTER JOIN departments_dup AS d 
+ON m.dept_no = d.dept_no
+ORDER BY dept_no;
 
 
 -- 5.2: SELECT d.dept_no
-
+SELECT m.dept_no, m.emp_no, d.dept_name
+FROM dept_manager_dup AS m
+RIGHT OUTER JOIN departments_dup AS d 
+ON m.dept_no = d.dept_no
+ORDER BY d.dept_no;
 
 -- 5.3: d LEFT JOIN m
-
-
+SELECT m.dept_no, m.emp_no, d.dept_name
+FROM departments_dup AS d
+LEFT JOIN dept_manager_dup AS m
+ON m.dept_no = d.dept_no
+ORDER BY dept_no;
 #############################
 -- Task Six: JOIN and WHERE Used Together
 -- In this task, you will retrieve data from tables
@@ -177,8 +221,11 @@ ORDER BY dept_no;
 SELECT * FROM salaries;
 
 -- Solution to 6.1
-
-
+SELECT e.emp_no, e.first_name, e.last_name, s.salary
+FROM employees AS e
+JOIN salaries AS s
+ON e.emp_no = s.emp_no
+WHERE salary > 145000;
 
 -- 6.2: What do you think will be the output of this query?
 
@@ -190,17 +237,30 @@ WHERE s.salary > 145000;
 
 -- 6.3 (Ex.): Select the first and last name, the hire date and the salary
 -- of all employees whose first name is 'Mario' and last_name is 'Straney'
-
+SELECT e.first_name, e.last_name, e.hire_date, s.salary
+FROM employees AS e
+JOIN salaries AS s
+ON e.emp_no = s.emp_no
+WHERE first_name = 'Mario' AND last_name = 'Straney';
 
 -- 6.4: Join the 'employees' and the 'dept_manager' tables to return a subset
 -- of all the employees whose last name is 'Markovitch'. 
 -- See if the output contains a manager with that name
-
+SELECT e.emp_no, e.first_name, e.last_name, dm.dept_no, dm.from_date
+FROM employees AS e
+LEFT JOIN dept_manager AS dm
+ON e.emp_no = dm.emp_no
+WHERE e.last_name = 'Markovitch'
+ORDER BY dm.dept_no, e.emp_no;
 
 -- 6.5: Join the 'employees' and the 'dept_manager' tables to return a subset
 -- of all the employees who were hired before 31st of January, 1985
-
-
+SELECT e.emp_no, e.first_name, e.last_name, dm.dept_no, dm.from_date, e.hire_date
+FROM employees AS e
+JOIN dept_manager AS dm
+ON e.emp_no = dm.emp_no
+WHERE e.hire_date < '1985-01-31'
+ORDER BY dm.dept_no, e.emp_no;
 
 #############################
 -- Task Seven: Using Aggregate Functions with Joins
@@ -212,7 +272,11 @@ WHERE s.salary > 145000;
 -- Using Aggregate Functions with Joins
 
 -- 7.1: What is the average salary for the different gender?
-   
+   SELECT e.gender, ROUND(AVG(salary),2) AS average_salary
+FROM employees AS e
+JOIN salaries AS s
+ON e.emp_no = s.emp_no
+GROUP BY e.gender;
 
 -- 7.2: What do you think will be the output if we SELECT e.emp_no?
 SELECT e.emp_no, e.gender, AVG(s.salary) AS average_salary
@@ -223,7 +287,11 @@ GROUP BY e.emp_no, gender;
 
 -- 7.3: How many males and how many females managers do we have in
 -- employees database?
-
+SELECT e.gender, COUNT(dm.emp_no)
+FROM employees AS e
+JOIN dept_manager AS dm
+ON e.emp_no = dm.emp_no
+GROUP BY e.gender;
 
 
 #############################
@@ -237,7 +305,11 @@ GROUP BY e.emp_no, gender;
 
 -- 8.1: Extract a list of all managers' first and last name, dept_no, hire date, to_date,
 -- and department name
-
+SELECT e.gender, COUNT(dm.emp_no)
+FROM employees AS e
+JOIN dept_manager AS dm
+ON e.emp_no = dm.emp_no
+GROUP BY e.gender;
 
 -- 8.2: What do you think will be the output of this?
 SELECT e.first_name, e.last_name, m.dept_no, e.hire_date, m.to_date, d.dept_name
@@ -259,9 +331,25 @@ SELECT * FROM dept_emp
 SELECT * FROM salaries
 
 -- Solution to 8.3
-
+ELECT ROUND(AVG(salary),2) AS Average_Salary, d.dept_name
+FROM departments AS d
+JOIN dept_emp AS de
+ON d.dept_no = de.dept_no
+JOIN salaries AS s
+ON de.emp_no = s.emp_no
+GROUP BY d.dept_name
+ORDER BY AVG(salary) DESC;
 
 -- 8.4 (Ex.): Retrieve the average salary for the different departments where the
 -- average_salary is more than 60000
+SELECT ROUND(AVG(salary),2) AS Average_Salary, d.dept_name
+FROM departments AS d
+JOIN dept_emp AS de
+ON d.dept_no = de.dept_no
+JOIN salaries AS s
+ON de.emp_no = s.emp_no
+GROUP BY d.dept_name
+HAVING AVG(salary) > 60000
+ORDER BY AVG(salary) DESC;
 
 
