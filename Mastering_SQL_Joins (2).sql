@@ -175,7 +175,6 @@ ORDER BY d.dept_no;
 
 ###########
 -- RIGHT JOIN
-
 -- We have seen LEFT JOIN in the previous task
 
 SELECT m.dept_no, m.emp_no, d.dept_name
